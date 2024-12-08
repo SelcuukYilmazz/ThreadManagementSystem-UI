@@ -6,8 +6,6 @@ import { ChevronLeft, ChevronRight} from 'lucide-react';
 
 const BASE_URL = 'http://localhost:8080';
 
-
-
 const ThreadManagement = () => {
     const [senderThreads, setSenderThreads] = useState([]);
     const [receiverThreads, setReceiverThreads] = useState([]);
