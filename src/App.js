@@ -1,4 +1,4 @@
-import ThreadManagement from './components/ThreadManagement';
+import ThreadManagement from './pages/ThreadManagement';
 
 function App() {
   return (

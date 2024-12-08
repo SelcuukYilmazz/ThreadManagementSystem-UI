@@ -1,5 +1,5 @@
-import {Card, CardContent} from "./Card";
-import {Button} from "./Button";
+import {Card, CardContent} from "../../common/Card";
+import {Button} from "../../common/Button";
 import {Pause, Play} from "lucide-react";
 
 export function ThreadCard ({ thread, onUpdateState, onUpdatePriority, onDelete })
