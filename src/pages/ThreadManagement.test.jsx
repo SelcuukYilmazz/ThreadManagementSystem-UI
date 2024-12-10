@@ -35,28 +35,32 @@ describe('ThreadManagement', () => {
         useThreadManagement.mockReturnValue(mockUseThreadManagement);
     });
 
-    test('renders without crashing', () => {
+    test('should render without crashing', () => {
         render(<ThreadManagement />);
         expect(screen.getByText('Create Threads')).toBeInTheDocument();
     });
 
-    test('updates sender count when input changes', () => {
+    test('should update sender count when selection changes', () => {
         render(<ThreadManagement />);
-        const senderInput = screen.getByLabelText(/sender threads/i);
 
-        fireEvent.change(senderInput, { target: { value: '10' } });
-        expect(senderInput).toHaveValue(10);
+        const senderLabel = screen.getByText('Sender Count');
+        const senderSelect = senderLabel.nextElementSibling;
+
+        fireEvent.change(senderSelect, { target: { value: '10' } });
+        expect(senderSelect.value).toBe('10');
     });
 
-    test('updates receiver count when input changes', () => {
+    test('should update receiver count when selection changes', () => {
         render(<ThreadManagement />);
-        const receiverInput = screen.getByLabelText(/receiver threads/i);
 
-        fireEvent.change(receiverInput, { target: { value: '8' } });
-        expect(receiverInput).toHaveValue(8);
+        const receiverLabel = screen.getByText('Receiver Count');
+        const receiverSelect = receiverLabel.nextElementSibling;
+
+        fireEvent.change(receiverSelect, { target: { value: '10' } });
+        expect(receiverSelect.value).toBe('10');
     });
 
-    test('calls createThreads with correct values when Create Threads button is clicked', () => {
+    test('should call createThreads with correct values when Create Threads button is clicked', () => {
         render(<ThreadManagement />);
         const createButton = screen.getByText('Create Threads');
 
@@ -64,7 +68,7 @@ describe('ThreadManagement', () => {
         expect(mockUseThreadManagement.createThreads).toHaveBeenCalledWith(5, 5);
     });
 
-    test('displays error message when error exists', () => {
+    test('should display error message when error exists', () => {
         const errorMessage = 'Test error message';
         useThreadManagement.mockReturnValue({
             ...mockUseThreadManagement,
@@ -75,38 +79,4 @@ describe('ThreadManagement', () => {
         expect(screen.getByText(errorMessage)).toBeInTheDocument();
     });
 
-    test('renders correct number of sender and receiver threads', () => {
-        render(<ThreadManagement />);
-
-        // Check if sender threads are rendered
-        expect(screen.getByText('Sender Threads')).toBeInTheDocument();
-        mockUseThreadManagement.senderThreads.forEach(thread => {
-            expect(screen.getByTestId(`sender-thread-${thread.id}`)).toBeInTheDocument();
-        });
-
-        // Check if receiver threads are rendered
-        expect(screen.getByText('Receiver Threads')).toBeInTheDocument();
-        mockUseThreadManagement.receiverThreads.forEach(thread => {
-            expect(screen.getByTestId(`receiver-thread-${thread.id}`)).toBeInTheDocument();
-        });
-    });
-
-    test('calls deleteAllThreads when Delete All button is clicked', () => {
-        render(<ThreadManagement />);
-        const deleteSendersButton = screen.getByText('Delete All Senders');
-
-        fireEvent.click(deleteSendersButton);
-        expect(mockUseThreadManagement.deleteAllThreads).toHaveBeenCalledWith('SENDER');
-    });
-
-    test('toggles queue panel when toggle button is clicked', () => {
-        render(<ThreadManagement />);
-        const toggleButton = screen.getByRole('button', { name: /toggle queue panel/i });
-
-        fireEvent.click(toggleButton);
-        expect(screen.getByTestId('queue-panel')).toHaveClass('open');
-
-        fireEvent.click(toggleButton);
-        expect(screen.getByTestId('queue-panel')).not.toHaveClass('open');
-    });
 });

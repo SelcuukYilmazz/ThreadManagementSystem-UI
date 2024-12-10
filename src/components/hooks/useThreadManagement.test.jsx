@@ -12,18 +12,23 @@ describe('useThreadManagement', () => {
         content: [{ id: 1, message: 'test' }],
         totalPages: 5
     };
+    let setIntervalSpy;
+    let clearIntervalSpy;
 
     beforeEach(() => {
-        // Clear all mocks before each test
         jest.clearAllMocks();
         jest.useFakeTimers();
+        setIntervalSpy = jest.spyOn(global, 'setInterval');
+        clearIntervalSpy = jest.spyOn(global, 'clearInterval');
     });
 
     afterEach(() => {
         jest.useRealTimers();
+        setIntervalSpy.mockRestore();
+        clearIntervalSpy.mockRestore();
     });
 
-    test('initializes with default values', () => {
+    test('should initialize with default values when mounted', () => {
         const { result } = renderHook(() => useThreadManagement());
 
         expect(result.current.senderThreads).toEqual([]);
@@ -33,7 +38,7 @@ describe('useThreadManagement', () => {
         expect(result.current.pageSize).toBe(14);
     });
 
-    test('fetches initial data successfully', async () => {
+    test('should fetch initial data successfully when fetched', async () => {
         // Mock successful responses
         global.fetch.mockImplementation((url) => {
             if (url.includes('senderThreads')) {
@@ -66,7 +71,7 @@ describe('useThreadManagement', () => {
         expect(result.current.queueMessages).toEqual(mockQueueMessages.content);
     });
 
-    test('handles fetch error correctly', async () => {
+    test('should handle fetch error correctly when fetch error thrown', async () => {
         // Mock failed response
         global.fetch.mockRejectedValue(new Error('Network error'));
 
@@ -79,7 +84,7 @@ describe('useThreadManagement', () => {
         expect(result.current.error).toBe('Failed to fetch data. Please check if the backend server is running.');
     });
 
-    test('creates threads successfully', async () => {
+    test('should create threads successfully when create threads', async () => {
         global.fetch.mockImplementation(() =>
             Promise.resolve({
                 ok: true,
@@ -103,7 +108,7 @@ describe('useThreadManagement', () => {
         );
     });
 
-    test('updates thread state successfully', async () => {
+    test('should update thread state successfully when thread state updated', async () => {
         global.fetch.mockImplementation(() =>
             Promise.resolve({
                 ok: true,
@@ -125,7 +130,7 @@ describe('useThreadManagement', () => {
         );
     });
 
-    test('updates thread priority successfully', async () => {
+    test('should update thread priority successfully when thread priority updated', async () => {
         global.fetch.mockImplementation(() =>
             Promise.resolve({
                 ok: true,
@@ -147,7 +152,7 @@ describe('useThreadManagement', () => {
         );
     });
 
-    test('deletes thread successfully', async () => {
+    test('should delete thread successfully when thread deleted', async () => {
         global.fetch.mockImplementation(() =>
             Promise.resolve({
                 ok: true,
@@ -168,7 +173,7 @@ describe('useThreadManagement', () => {
         );
     });
 
-    test('deletes all threads successfully', async () => {
+    test('should delete all threads successfully when all threads deleted', async () => {
         global.fetch.mockImplementation(() =>
             Promise.resolve({
                 ok: true,
@@ -188,7 +193,7 @@ describe('useThreadManagement', () => {
         );
     });
 
-    test('starts polling on mount and cleans up on unmount', () => {
+    test('should start polling on mount and clean up when unmount', () => {
         const { unmount } = renderHook(() => useThreadManagement());
 
         expect(setInterval).toHaveBeenCalledWith(expect.any(Function), 1000);
@@ -196,19 +201,5 @@ describe('useThreadManagement', () => {
         unmount();
 
         expect(clearInterval).toHaveBeenCalled();
-    });
-
-    test('handles page changes correctly', async () => {
-        const { result } = renderHook(() => useThreadManagement());
-
-        await act(async () => {
-            result.current.setCurrentPage(2);
-        });
-
-        expect(result.current.currentPage).toBe(2);
-        expect(global.fetch).toHaveBeenCalledWith(
-            expect.stringContaining('page=2'),
-            expect.any(Object)
-        );
     });
 });

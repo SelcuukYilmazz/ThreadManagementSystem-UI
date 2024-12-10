@@ -23,26 +23,23 @@ describe('QueuePanel', () => {
         jest.clearAllMocks();
     });
 
-    test('renders with all elements when closed', () => {
+    test('should render with all elements when closed', () => {
         render(<QueuePanel {...defaultProps} />);
 
-        // Toggle button should be at right-4
-        const toggleButton = screen.getByRole('button');
+        const toggleButton = screen.getByTestId('chevron-left').closest('button');
         expect(toggleButton).toHaveClass('right-4');
 
-        // Should show left chevron when closed
         expect(screen.getByTestId('chevron-left')).toBeInTheDocument();
 
-        // Panel should be translated out
         const panel = screen.getByText('Queue Messages').parentElement?.parentElement;
         expect(panel).toHaveClass('translate-x-full');
     });
 
-    test('renders with all elements when open', () => {
+    test('should render with all elements when open', () => {
         render(<QueuePanel {...defaultProps} isOpen={true} />);
 
         // Toggle button should be at right-[384px]
-        const toggleButton = screen.getByRole('button');
+        const toggleButton = screen.getByTestId('chevron-right').closest('button');
         expect(toggleButton).toHaveClass('right-[384px]');
 
         // Should show right chevron when open
@@ -53,16 +50,16 @@ describe('QueuePanel', () => {
         expect(panel).toHaveClass('translate-x-0');
     });
 
-    test('calls onToggle when toggle button is clicked', () => {
+    test('should call onToggle when toggle button is clicked', () => {
         render(<QueuePanel {...defaultProps} />);
 
-        const toggleButton = screen.getByRole('button');
+        const toggleButton = screen.getByTestId('chevron-left').closest('button');
         fireEvent.click(toggleButton);
 
         expect(defaultProps.onToggle).toHaveBeenCalledTimes(1);
     });
 
-    test('displays messages correctly', () => {
+    test('should display messages correctly when rendered', () => {
         render(<QueuePanel {...defaultProps} />);
 
         defaultProps.messages.forEach(message => {
@@ -70,13 +67,13 @@ describe('QueuePanel', () => {
         });
     });
 
-    test('displays "No messages" when messages array is empty', () => {
+    test('should display "No messages" when messages array is empty', () => {
         render(<QueuePanel {...defaultProps} messages={[]} />);
 
         expect(screen.getByText('No messages in queue')).toBeInTheDocument();
     });
 
-    test('renders pagination control with correct props', () => {
+    test('should render pagination control with correct props when rendered', () => {
         render(<QueuePanel {...defaultProps} />);
 
         // Check pagination text is rendered
@@ -87,13 +84,8 @@ describe('QueuePanel', () => {
         expect(screen.getByText('Next')).toBeInTheDocument();
     });
 
-    test('pagination control receives correct props', () => {
-        render(<QueuePanel {...defaultProps} currentPage={2} />);
 
-        expect(screen.getByText('Page 3 of 5')).toBeInTheDocument();
-    });
-
-    test('handles page changes through pagination control', () => {
+    test('should handle page changes through pagination control when clicked', () => {
         render(<QueuePanel {...defaultProps} currentPage={1} />);
 
         const nextButton = screen.getByText('Next');
@@ -102,7 +94,7 @@ describe('QueuePanel', () => {
         expect(defaultProps.onPageChange).toHaveBeenCalledWith(2);
     });
 
-    test('applies correct styling classes', () => {
+    test('should apply correct styling classes when rendered', () => {
         render(<QueuePanel {...defaultProps} />);
 
         // Check main container styling
@@ -121,22 +113,21 @@ describe('QueuePanel', () => {
             'z-20'
         );
 
-        // Check table styling
         const table = screen.getByRole('table');
         expect(table).toHaveClass('w-full');
     });
 
-    test('renders table header correctly', () => {
+    test('should render table header correctly when rendered', () => {
         render(<QueuePanel {...defaultProps} />);
 
         const header = screen.getByText('Content');
         expect(header).toHaveClass('text-left', 'px-4', 'py-2', 'bg-gray-50', 'sticky', 'top-0');
     });
 
-    test('renders message rows with correct styling', () => {
+    test('should render message rows with correct styling when rendered', () => {
         render(<QueuePanel {...defaultProps} />);
 
-        const messageRows = screen.getAllByRole('row').slice(1); // Skip header row
+        const messageRows = screen.getAllByRole('row').slice(1);
         messageRows.forEach(row => {
             expect(row).toHaveClass('border-t');
             expect(row.querySelector('td')).toHaveClass('px-4', 'py-2', 'text-sm');

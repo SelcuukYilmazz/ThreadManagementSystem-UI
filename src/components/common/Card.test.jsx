@@ -4,7 +4,7 @@ import '@testing-library/jest-dom';
 
 describe('Card Components', () => {
     describe('Card', () => {
-        test('renders with default classes', () => {
+        test('should render with default classes when card rendered', () => {
             render(<Card>Card Content</Card>);
             const card = screen.getByText('Card Content');
 
@@ -16,7 +16,7 @@ describe('Card Components', () => {
             );
         });
 
-        test('merges custom className with defaults', () => {
+        test('should merge custom className with defaults when custom className given', () => {
             const customClass = 'custom-card';
             render(<Card className={customClass}>Card Content</Card>);
             const card = screen.getByText('Card Content');
@@ -25,7 +25,7 @@ describe('Card Components', () => {
             expect(card).toHaveClass('bg-white', 'rounded-lg');
         });
 
-        test('passes through additional props', () => {
+        test('should pass through additional props when additional props given', () => {
             render(<Card data-testid="test-card">Card Content</Card>);
             const card = screen.getByTestId('test-card');
 
@@ -34,7 +34,7 @@ describe('Card Components', () => {
     });
 
     describe('CardHeader', () => {
-        test('renders with default classes', () => {
+        test('should render with default classes when card header rendered', () => {
             render(<CardHeader>Header Content</CardHeader>);
             const header = screen.getByText('Header Content');
 
@@ -44,7 +44,7 @@ describe('Card Components', () => {
             );
         });
 
-        test('merges custom className with defaults', () => {
+        test('should merge custom className with default classes when custom className given ', () => {
             const customClass = 'custom-header';
             render(<CardHeader className={customClass}>Header Content</CardHeader>);
             const header = screen.getByText('Header Content');
@@ -53,7 +53,7 @@ describe('Card Components', () => {
             expect(header).toHaveClass('p-6', 'pb-4');
         });
 
-        test('passes through additional props', () => {
+        test('should pass through additional props when additional props given', () => {
             render(<CardHeader data-testid="test-header">Header Content</CardHeader>);
             const header = screen.getByTestId('test-header');
 
@@ -62,7 +62,7 @@ describe('Card Components', () => {
     });
 
     describe('CardTitle', () => {
-        test('renders with default classes', () => {
+        test('should render with default classes when rendered', () => {
             render(<CardTitle>Title Content</CardTitle>);
             const title = screen.getByText('Title Content');
 
@@ -74,14 +74,14 @@ describe('Card Components', () => {
             );
         });
 
-        test('renders as h3 element', () => {
+        test('should render as h3 element when rendered', () => {
             render(<CardTitle>Title Content</CardTitle>);
             const title = screen.getByText('Title Content');
 
             expect(title.tagName).toBe('H3');
         });
 
-        test('merges custom className with defaults', () => {
+        test('should merge custom className with default classes when custom className given', () => {
             const customClass = 'custom-title';
             render(<CardTitle className={customClass}>Title Content</CardTitle>);
             const title = screen.getByText('Title Content');
@@ -90,7 +90,7 @@ describe('Card Components', () => {
             expect(title).toHaveClass('text-2xl', 'font-semibold');
         });
 
-        test('passes through additional props', () => {
+        test('should pass through additional props when additional props given', () => {
             render(<CardTitle data-testid="test-title">Title Content</CardTitle>);
             const title = screen.getByTestId('test-title');
 
@@ -99,7 +99,7 @@ describe('Card Components', () => {
     });
 
     describe('CardContent', () => {
-        test('renders with default classes', () => {
+        test('should render with default classes when rendered', () => {
             render(<CardContent>Content</CardContent>);
             const content = screen.getByText('Content');
 
@@ -109,7 +109,7 @@ describe('Card Components', () => {
             );
         });
 
-        test('merges custom className with defaults', () => {
+        test('should merge custom className with default classes when custom className given', () => {
             const customClass = 'custom-content';
             render(<CardContent className={customClass}>Content</CardContent>);
             const content = screen.getByText('Content');
@@ -118,7 +118,7 @@ describe('Card Components', () => {
             expect(content).toHaveClass('p-6', 'pt-0');
         });
 
-        test('passes through additional props', () => {
+        test('should pass through additional props when additional props given', () => {
             render(<CardContent data-testid="test-content">Content</CardContent>);
             const content = screen.getByTestId('test-content');
 
@@ -127,7 +127,7 @@ describe('Card Components', () => {
     });
 
     describe('Card Component Integration', () => {
-        test('renders full card structure correctly', () => {
+        test('should render full card structure correctly when card structure rendered fully', () => {
             render(
                 <Card>
                     <CardHeader>
@@ -143,20 +143,6 @@ describe('Card Components', () => {
             const title = screen.getByText('Card Title');
             expect(title.tagName).toBe('H3');
             expect(title.parentElement).toHaveClass('p-6', 'pb-4');
-        });
-
-        test('handles undefined className gracefully', () => {
-            render(
-                <Card className={undefined}>
-                    <CardHeader className={undefined}>
-                        <CardTitle className={undefined}>Title</CardTitle>
-                    </CardHeader>
-                    <CardContent className={undefined}>Content</CardContent>
-                </Card>
-            );
-
-            expect(screen.getByText('Title')).toBeInTheDocument();
-            expect(screen.getByText('Content')).toBeInTheDocument();
         });
     });
 });

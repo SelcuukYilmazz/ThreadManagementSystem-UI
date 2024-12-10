@@ -14,28 +14,41 @@ describe('ThreadCountSelector', () => {
         jest.clearAllMocks();
     });
 
-    test('renders both sender and receiver count selectors', () => {
-        render(<ThreadCountSelector {...defaultProps} />);
+    test('should render the sender and receiver count selectors when rendered', () => {
+        render(<ThreadCountSelector />);
 
-        expect(screen.getByLabelText('Sender Count')).toBeInTheDocument();
-        expect(screen.getByLabelText('Receiver Count')).toBeInTheDocument();
+        const senderLabel = screen.getByText('Sender Count');
+        const senderSelect = senderLabel.nextElementSibling;
+
+        const receiverLabel = screen.getByText('Receiver Count');
+        const receiverSelect = receiverLabel.nextElementSibling;
+
+        expect(senderSelect).toBeInTheDocument();
+        expect(receiverSelect).toBeInTheDocument();
     });
 
-    test('renders correct number of options for both selectors', () => {
+    test('should render correct number of options for both selectors when rendered', () => {
         render(<ThreadCountSelector {...defaultProps} />);
 
-        const senderOptions = screen.getByLabelText('Sender Count').querySelectorAll('option');
-        const receiverOptions = screen.getByLabelText('Receiver Count').querySelectorAll('option');
+        const senderLabel = screen.getByText('Sender Count');
+        const senderSelect = senderLabel.nextElementSibling;
+        const senderOptions = senderSelect.querySelectorAll('option');
+
+        const receiverLabel = screen.getByText('Receiver Count');
+        const receiverSelect = receiverLabel.nextElementSibling;
+        const receiverOptions = receiverSelect.querySelectorAll('option');
 
         expect(senderOptions).toHaveLength(7);
         expect(receiverOptions).toHaveLength(7);
     });
 
-    test('generates correct option values (0, 5, 10, 15, 20, 25, 30)', () => {
+    test('should generate correct option values (0, 5, 10, 15, 20, 25, 30) when rendered', () => {
         render(<ThreadCountSelector {...defaultProps} />);
 
         const expectedValues = [0, 5, 10, 15, 20, 25, 30];
-        const senderOptions = screen.getByLabelText('Sender Count').querySelectorAll('option');
+        const senderLabel = screen.getByText('Sender Count');
+        const senderSelect = senderLabel.nextElementSibling;
+        const senderOptions = senderSelect.querySelectorAll('option');
 
         senderOptions.forEach((option, index) => {
             expect(option.value).toBe(expectedValues[index].toString());
@@ -43,35 +56,45 @@ describe('ThreadCountSelector', () => {
         });
     });
 
-    test('sets initial values correctly', () => {
+    test('should set initial values correctly when rendered', () => {
         render(<ThreadCountSelector {...defaultProps} senderCount={10} receiverCount={15} />);
 
-        expect(screen.getByLabelText('Sender Count')).toHaveValue('10');
-        expect(screen.getByLabelText('Receiver Count')).toHaveValue('15');
+        const senderLabel = screen.getByText('Sender Count');
+        const senderSelect = senderLabel.nextElementSibling;
+
+        const receiverLabel = screen.getByText('Receiver Count');
+        const receiverSelect = receiverLabel.nextElementSibling;
+
+        expect(senderSelect).toHaveValue('10');
+        expect(receiverSelect).toHaveValue('15');
     });
 
-    test('calls setSenderCount with correct value when sender count changes', () => {
+    test('should call setSenderCount with correct value when sender count changes', () => {
         render(<ThreadCountSelector {...defaultProps} />);
 
-        const senderSelect = screen.getByLabelText('Sender Count');
+        const senderLabel = screen.getByText('Sender Count');
+        const senderSelect = senderLabel.nextElementSibling;
         fireEvent.change(senderSelect, { target: { value: '15' } });
 
         expect(defaultProps.setSenderCount).toHaveBeenCalledWith(15);
     });
 
-    test('calls setReceiverCount with correct value when receiver count changes', () => {
+    test('should call setReceiverCount with correct value when receiver count changes', () => {
         render(<ThreadCountSelector {...defaultProps} />);
 
-        const receiverSelect = screen.getByLabelText('Receiver Count');
+        const receiverLabel = screen.getByText('Receiver Count');
+        const receiverSelect = receiverLabel.nextElementSibling;
         fireEvent.change(receiverSelect, { target: { value: '20' } });
 
         expect(defaultProps.setReceiverCount).toHaveBeenCalledWith(20);
     });
 
-    test('applies correct styling classes to container', () => {
+    test('should apply correct styling classes to container when rendered', () => {
         render(<ThreadCountSelector {...defaultProps} />);
 
-        const container = screen.getByLabelText('Sender Count').closest('.grid');
+        const senderLabel = screen.getByText('Sender Count');
+        const senderSelect = senderLabel.nextElementSibling;
+        const container = senderSelect.closest('.grid');
         expect(container).toHaveClass(
             'grid',
             'grid-cols-1',
@@ -81,7 +104,7 @@ describe('ThreadCountSelector', () => {
         );
     });
 
-    test('applies correct styling to labels', () => {
+    test('should apply correct styling to labels when rendered', () => {
         render(<ThreadCountSelector {...defaultProps} />);
 
         const labels = screen.getAllByText(/Count$/);
@@ -95,7 +118,7 @@ describe('ThreadCountSelector', () => {
         });
     });
 
-    test('applies correct styling to select elements', () => {
+    test('should apply correct styling to select elements when rendered', () => {
         render(<ThreadCountSelector {...defaultProps} />);
 
         const selects = screen.getAllByRole('combobox');
@@ -109,11 +132,15 @@ describe('ThreadCountSelector', () => {
         });
     });
 
-    test('maintains independent state for both selectors', () => {
+    test('should maintain independent state for both selectors when rendered', () => {
         render(<ThreadCountSelector {...defaultProps} />);
 
-        const senderSelect = screen.getByLabelText('Sender Count');
-        const receiverSelect = screen.getByLabelText('Receiver Count');
+
+        const senderLabel = screen.getByText('Sender Count');
+        const senderSelect = senderLabel.nextElementSibling;
+
+        const receiverLabel = screen.getByText('Receiver Count');
+        const receiverSelect = receiverLabel.nextElementSibling;
 
         fireEvent.change(senderSelect, { target: { value: '10' } });
         fireEvent.change(receiverSelect, { target: { value: '20' } });
@@ -122,10 +149,11 @@ describe('ThreadCountSelector', () => {
         expect(defaultProps.setReceiverCount).toHaveBeenCalledWith(20);
     });
 
-    test('converts string values to numbers in onChange handlers', () => {
+    test('should convert string values to numbers in onChange handlers when rendered', () => {
         render(<ThreadCountSelector {...defaultProps} />);
 
-        const senderSelect = screen.getByLabelText('Sender Count');
+        const senderLabel = screen.getByText('Sender Count');
+        const senderSelect = senderLabel.nextElementSibling;
         fireEvent.change(senderSelect, { target: { value: '25' } });
 
         expect(defaultProps.setSenderCount).toHaveBeenCalledWith(25);

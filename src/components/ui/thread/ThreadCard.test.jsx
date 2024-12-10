@@ -27,28 +27,28 @@ describe('ThreadCard', () => {
         jest.clearAllMocks();
     });
 
-    test('renders thread details correctly', () => {
+    test('should render thread details correctly when rendered with thread', () => {
         render(<ThreadCard {...mockProps} />);
 
         expect(screen.getByText(mockThread.id)).toBeInTheDocument();
         expect(screen.getByText(mockThread.state)).toBeInTheDocument();
     });
 
-    test('applies correct state badge styling for RUNNING state', () => {
+    test('should apply correct state badge styling for RUNNING state when rendered', () => {
         render(<ThreadCard {...mockProps} />);
 
         const stateBadge = screen.getByText('RUNNING');
         expect(stateBadge).toHaveClass('bg-green-100', 'text-green-800');
     });
 
-    test('applies correct state badge styling for STOPPED state', () => {
+    test('should apply correct state badge styling for STOPPED state when rendered', () => {
         render(<ThreadCard {...mockProps} thread={{ ...mockThread, state: 'STOPPED' }} />);
 
         const stateBadge = screen.getByText('STOPPED');
         expect(stateBadge).toHaveClass('bg-red-100', 'text-red-800');
     });
 
-    test('renders Run button with correct variant when thread is STOPPED', () => {
+    test('should render Run button with correct variant when thread is STOPPED', () => {
         render(<ThreadCard {...mockProps} thread={{ ...mockThread, state: 'STOPPED' }} />);
 
         const runButton = screen.getByText('Run').parentElement;
@@ -56,21 +56,21 @@ describe('ThreadCard', () => {
         expect(screen.getByTestId('play-icon')).toBeInTheDocument();
     });
 
-    test('calls onUpdateState with RUNNING state when Run button clicked', () => {
+    test('should call onUpdateState with RUNNING state when Run button clicked', () => {
         render(<ThreadCard {...mockProps} />);
 
         fireEvent.click(screen.getByText('Run'));
         expect(mockProps.onUpdateState).toHaveBeenCalledWith(mockThread, 'RUNNING');
     });
 
-    test('calls onUpdateState with STOPPED state when Stop button clicked', () => {
+    test('should call onUpdateState with STOPPED state when Stop button clicked', () => {
         render(<ThreadCard {...mockProps} />);
 
         fireEvent.click(screen.getByText('Stop'));
         expect(mockProps.onUpdateState).toHaveBeenCalledWith(mockThread, 'STOPPED');
     });
 
-    test('calls onDelete when Delete Thread button is clicked', () => {
+    test('should call onDelete when Delete Thread button is clicked', () => {
         render(<ThreadCard {...mockProps} />);
 
         const deleteButton = screen.getByText('Delete Thread');
@@ -79,7 +79,7 @@ describe('ThreadCard', () => {
         expect(mockProps.onDelete).toHaveBeenCalledWith(mockThread);
     });
 
-    test('applies correct styling to Delete Thread button', () => {
+    test('should apply correct styling to Delete Thread button', () => {
         render(<ThreadCard {...mockProps} />);
 
         const deleteButton = screen.getByText('Delete Thread');
@@ -92,7 +92,7 @@ describe('ThreadCard', () => {
         );
     });
 
-    test('renders priority label correctly', () => {
+    test('should render priority label correctly', () => {
         render(<ThreadCard {...mockProps} />);
 
         const label = screen.getByText('Priority');

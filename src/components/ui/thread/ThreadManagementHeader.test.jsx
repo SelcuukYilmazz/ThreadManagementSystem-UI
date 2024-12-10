@@ -3,27 +3,27 @@ import { ThreadManagementHeader } from './ThreadManagementHeader';
 import '@testing-library/jest-dom';
 
 describe('ThreadManagementHeader', () => {
-    test('renders the title correctly', () => {
+    test('should render the title correctly when rendered', () => {
         render(<ThreadManagementHeader />);
 
         expect(screen.getByText('Thread Management System')).toBeInTheDocument();
     });
 
-    test('does not render error message when error is null', () => {
+    test('should not render error message when error is null', () => {
         render(<ThreadManagementHeader error={null} />);
 
         const errorContainer = screen.queryByRole('alert');
         expect(errorContainer).not.toBeInTheDocument();
     });
 
-    test('does not render error message when error is undefined', () => {
+    test('should not render error message when error is undefined', () => {
         render(<ThreadManagementHeader />);
 
         const errorContainer = screen.queryByRole('alert');
         expect(errorContainer).not.toBeInTheDocument();
     });
 
-    test('renders error message when error is provided', () => {
+    test('should render error message when error is provided', () => {
         const errorMessage = 'Test error message';
         render(<ThreadManagementHeader error={errorMessage} />);
 
@@ -43,14 +43,14 @@ describe('ThreadManagementHeader', () => {
         );
     });
 
-    test('renders CardHeader and CardTitle components', () => {
+    test('should render CardHeader and CardTitle components when rendered', () => {
         render(<ThreadManagementHeader />);
 
         const header = screen.getByText('Thread Management System').closest('div');
         expect(header).toBeInTheDocument();
     });
 
-    test('renders error with correct styling', () => {
+    test('should render error with correct styling when rendered', () => {
         const errorMessage = 'Test error message';
         render(<ThreadManagementHeader error={errorMessage} />);
 
@@ -63,14 +63,14 @@ describe('ThreadManagementHeader', () => {
         );
     });
 
-    test('handles empty string error', () => {
+    test('should handle empty string error when error thrown', () => {
         render(<ThreadManagementHeader error="" />);
 
         const errorContainer = screen.queryByRole('alert');
         expect(errorContainer).not.toBeInTheDocument();
     });
 
-    test('maintains layout structure with and without error', () => {
+    test('should maintain layout structure with and without error when rendered fully', () => {
         const { rerender } = render(<ThreadManagementHeader />);
 
         // Check layout without error

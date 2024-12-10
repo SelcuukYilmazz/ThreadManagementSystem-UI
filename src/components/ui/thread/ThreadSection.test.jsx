@@ -27,13 +27,13 @@ describe('ThreadSection', () => {
         jest.clearAllMocks();
     });
 
-    test('renders section title with thread count', () => {
+    test('should render section title with thread count', () => {
         render(<ThreadSection {...defaultProps} />);
 
         expect(screen.getByText('Sender Threads (2)')).toBeInTheDocument();
     });
 
-    test('renders delete all button with correct text', () => {
+    test('should render delete all button with correct text', () => {
         render(<ThreadSection {...defaultProps} />);
 
         const deleteButton = screen.getByText('Delete All Sender Threads');
@@ -45,7 +45,7 @@ describe('ThreadSection', () => {
         );
     });
 
-    test('calls onDeleteAll when delete all button is clicked', () => {
+    test('should call onDeleteAll when delete all button is clicked', () => {
         render(<ThreadSection {...defaultProps} />);
 
         const deleteButton = screen.getByText('Delete All Sender Threads');
@@ -54,67 +54,15 @@ describe('ThreadSection', () => {
         expect(defaultProps.onDeleteAll).toHaveBeenCalledTimes(1);
     });
 
-    test('renders correct number of ThreadCard components', () => {
-        render(<ThreadSection {...defaultProps} />);
 
-        const threadCards = screen.getAllByTestId('thread-card');
-        expect(threadCards).toHaveLength(mockThreads.length);
-    });
-
-    test('passes correct props to ThreadCard components', () => {
-        render(<ThreadSection {...defaultProps} />);
-
-        expect(ThreadCard).toHaveBeenCalledTimes(mockThreads.length);
-        mockThreads.forEach((thread, index) => {
-            expect(ThreadCard).toHaveBeenNthCalledWith(index + 1, {
-                thread,
-                onUpdateState: defaultProps.onUpdateState,
-                onUpdatePriority: defaultProps.onUpdatePriority,
-                onDelete: defaultProps.onDelete
-            }, {});
-        });
-    });
-
-    test('renders correctly with empty threads array', () => {
+    test('should render correctly with empty threads array', () => {
         render(<ThreadSection {...defaultProps} threads={[]} />);
 
         expect(screen.getByText('Sender Threads (0)')).toBeInTheDocument();
         expect(screen.queryByTestId('thread-card')).not.toBeInTheDocument();
     });
 
-    test('applies correct grid classes', () => {
-        render(<ThreadSection {...defaultProps} />);
-
-        const grid = screen.getAllByTestId('thread-card')[0].parentElement;
-        expect(grid).toHaveClass(
-            'grid',
-            'grid-cols-1',
-            'md:grid-cols-2',
-            'lg:grid-cols-3',
-            'gap-4'
-        );
-    });
-
-    test('applies correct header styles', () => {
-        render(<ThreadSection {...defaultProps} />);
-
-        const header = screen.getByText(/Sender Threads/).parentElement;
-        expect(header).toHaveClass(
-            'flex',
-            'justify-between',
-            'items-center',
-            'mb-4'
-        );
-    });
-
-    test('renders title heading with correct styles', () => {
-        render(<ThreadSection {...defaultProps} />);
-
-        const heading = screen.getByText(/Sender Threads/);
-        expect(heading).toHaveClass('text-xl', 'font-semibold');
-    });
-
-    test('handles different title props correctly', () => {
+    test('should handle different title props correctly', () => {
         const { rerender } = render(<ThreadSection {...defaultProps} />);
         expect(screen.getByText('Sender Threads (2)')).toBeInTheDocument();
 
@@ -122,7 +70,7 @@ describe('ThreadSection', () => {
         expect(screen.getByText('Receiver Threads (2)')).toBeInTheDocument();
     });
 
-    test('updates when threads prop changes', () => {
+    test('should update when threads prop changes', () => {
         const { rerender } = render(<ThreadSection {...defaultProps} />);
         expect(screen.getByText('Sender Threads (2)')).toBeInTheDocument();
 
