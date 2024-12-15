@@ -27,82 +27,7 @@ export const useThreadManagement = () => {
     // WebSocket Refs
     const stompClientRef = useRef(null);
     const sessionIdRef = useRef(crypto.randomUUID());
-    const pollIntervalRef = useRef(null);
 
-    /**
-     * Fetches messages via HTTP
-     */
-    const fetchMessages = useCallback(async () => {
-        try {
-            const response = await fetch(
-                `/messageQueue/getMessageQueue?page=${currentPage}&size=${pageSize}`
-            );
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-
-            const data = await response.json();
-            setMessages(data.content);
-            setTotalPages(data.totalPages);
-            setError(null);
-        } catch (err) {
-            console.error('Error fetching messages:', err);
-            setError('Failed to fetch messages. Please try again.');
-        }
-    }, [currentPage, pageSize]);
-
-    /**
-     * Fetches thread information via HTTP
-     */
-    const fetchThreads = useCallback(async () => {
-        try {
-            const [senderResponse, receiverResponse] = await Promise.all([
-                fetch('/senderThreads/getAllSenderThreads'),
-                fetch('/receiverThreads/getAllReceiverThreads')
-            ]);
-
-            if (!senderResponse.ok || !receiverResponse.ok) {
-                throw new Error('Failed to fetch threads');
-            }
-
-            const [senderData, receiverData] = await Promise.all([
-                senderResponse.json(),
-                receiverResponse.json()
-            ]);
-
-            setSenderThreads(senderData);
-            setReceiverThreads(receiverData);
-            setError(null);
-        } catch (err) {
-            console.error('Error fetching threads:', err);
-            setError('Failed to fetch threads. Please try again.');
-        }
-    }, []);
-
-    /**
-     * Starts polling for updates when WebSocket is not available
-     */
-    const startPolling = useCallback(() => {
-        if (pollIntervalRef.current) {
-            clearInterval(pollIntervalRef.current);
-        }
-
-        pollIntervalRef.current = setInterval(() => {
-            fetchMessages();
-            fetchThreads();
-        }, POLLING_INTERVAL);
-    }, [fetchMessages, fetchThreads]);
-
-    /**
-     * Stops polling
-     */
-    const stopPolling = useCallback(() => {
-        if (pollIntervalRef.current) {
-            clearInterval(pollIntervalRef.current);
-            pollIntervalRef.current = null;
-        }
-    }, []);
 
     /**
      * Establishes WebSocket connection
@@ -119,7 +44,6 @@ export const useThreadManagement = () => {
             () => {
                 setIsConnected(true);
                 stompClientRef.current = stomp;
-                stopPolling();
 
                 // Subscribe to all necessary topics
                 stomp.subscribe('/topic/senderThreads', (message) => {
@@ -135,35 +59,20 @@ export const useThreadManagement = () => {
                 stomp.subscribe(`/topic/messageQueue`, (message) => {  // Changed from /user/topic/messageQueue
                     try {
                         const messageData = JSON.parse(message.body);
-                        setMessages(messageData.content || []);
-                        setTotalPages(messageData.totalPages || 0);
+                        setMessages(messageData.content);
+                        setTotalPages(messageData.totalPages);
                     } catch (error) {
                         console.error('Error parsing message:', error);
                     }
                 });
 
-                stomp.subscribe(`/user/topic/messageQueue`, (message) => {
-                    const queueData = JSON.parse(message.body);
-                    setMessages(queueData.content);
-                    setTotalPages(queueData.totalPages);
-                });
-
-                // Initialize subscriptions
-                stomp.send('/messageQueue/subscribe', {},
-                    JSON.stringify({
-                        sessionId: sessionIdRef.current,
-                        page: currentPage,
-                        size: pageSize
-                    })
-                );
-
                 // Request initial data
-                stomp.send('/senderThreads/sendSenderThreads', {}, JSON.stringify({}));
-                stomp.send('/receiverThreads/sendReceiverThreads', {}, JSON.stringify({}));
-                stomp.send('/messageQueue/sendMessageQueue', {},
+                stomp.send('/app/sendSenderThreads', {}, JSON.stringify({}));
+                stomp.send('/app/sendReceiverThreads', {}, JSON.stringify({}));
+                stomp.send('/app/sendMessageQueue', {},
                     JSON.stringify({
-                        page: currentPage,
-                        size: pageSize
+                        page: parseInt(currentPage),
+                        size: parseInt(pageSize)
                     })
                 );
 
@@ -176,12 +85,13 @@ export const useThreadManagement = () => {
                 setError('WebSocket connection failed. Falling back to HTTP polling.');
                 setIsConnected(false);
                 setIsLoading(false);
-                startPolling();
             }
         );
 
+        console.log(messages);
         return stomp;
-    }, [currentPage, pageSize, startPolling, stopPolling]);
+    }, [currentPage, pageSize]);
+
 
     /**
      * Creates new threads
@@ -203,12 +113,9 @@ export const useThreadManagement = () => {
             }
 
             if (stompClientRef.current?.connected) {
-                stompClientRef.current.send('/senderThreads/sendSenderThreads', {}, JSON.stringify({}));
-                stompClientRef.current.send('/receiverThreads/sendReceiverThreads', {}, JSON.stringify({}));
-            } else {
-                await fetchThreads();
+                stompClientRef.current.send('/app/sendSenderThreads', {}, JSON.stringify({}));
+                stompClientRef.current.send('/app/sendReceiverThreads', {}, JSON.stringify({}));
             }
-
             setError(null);
         } catch (err) {
             console.error('Error creating threads:', err);
@@ -237,10 +144,8 @@ export const useThreadManagement = () => {
             }
 
             if (stompClientRef.current?.connected) {
-                stompClientRef.current.send('/senderThreads/sendSenderThreads', {}, JSON.stringify({}));
-                stompClientRef.current.send('/receiverThreads/sendReceiverThreads', {}, JSON.stringify({}));
-            } else {
-                await fetchThreads();
+                stompClientRef.current.send('/app/sendSenderThreads', {}, JSON.stringify({}));
+                stompClientRef.current.send('/app/sendReceiverThreads', {}, JSON.stringify({}));
             }
 
             setError(null);
@@ -271,10 +176,8 @@ export const useThreadManagement = () => {
             }
 
             if (stompClientRef.current?.connected) {
-                stompClientRef.current.send('/senderThreads/sendSenderThreads', {}, JSON.stringify({}));
-                stompClientRef.current.send('/receiverThreads/sendReceiverThreads', {}, JSON.stringify({}));
-            } else {
-                await fetchThreads();
+                stompClientRef.current.send('/app/sendSenderThreads', {}, JSON.stringify({}));
+                stompClientRef.current.send('/app/sendReceiverThreads', {}, JSON.stringify({}));
             }
 
             setError(null);
@@ -305,10 +208,8 @@ export const useThreadManagement = () => {
             }
 
             if (stompClientRef.current?.connected) {
-                stompClientRef.current.send('/senderThreads/sendSenderThreads', {}, JSON.stringify({}));
-                stompClientRef.current.send('/receiverThreads/sendReceiverThreads', {}, JSON.stringify({}));
-            } else {
-                await fetchThreads();
+                stompClientRef.current.send('/app/sendSenderThreads', {}, JSON.stringify({}));
+                stompClientRef.current.send('/app/sendReceiverThreads', {}, JSON.stringify({}));
             }
 
             setError(null);
@@ -337,10 +238,8 @@ export const useThreadManagement = () => {
             }
 
             if (stompClientRef.current?.connected) {
-                stompClientRef.current.send('/senderThreads/sendSenderThreads', {}, JSON.stringify({}));
-                stompClientRef.current.send('/receiverThreads/sendReceiverThreads', {}, JSON.stringify({}));
-            } else {
-                await fetchThreads();
+                stompClientRef.current.send('/app/sendSenderThreads', {}, JSON.stringify({}));
+                stompClientRef.current.send('/app/sendReceiverThreads', {}, JSON.stringify({}));
             }
 
             setError(null);
@@ -359,16 +258,14 @@ export const useThreadManagement = () => {
         setCurrentPage(newPage);
 
         if (stompClientRef.current?.connected) {
-            stompClientRef.current.send('/messageQueue/updatePage', {},
+            stompClientRef.current.send('/app/updatePage', {},
                 JSON.stringify({
                     sessionId: sessionIdRef.current,
                     page: newPage
                 })
             );
-        } else {
-            fetchMessages();
         }
-    }, [fetchMessages]);
+    }, []);
 
     // Initialize thread lifecycles
     useEffect(() => {
@@ -379,7 +276,6 @@ export const useThreadManagement = () => {
                     fetch('/senderThreads/startSenderThreadsLifeCycle'),
                     fetch('/receiverThreads/startReceiverThreadsLifeCycle')
                 ]);
-                await Promise.all([fetchMessages(), fetchThreads()]);
                 setError(null);
             } catch (err) {
                 console.error('Error starting thread lifecycles:', err);
@@ -390,7 +286,7 @@ export const useThreadManagement = () => {
         };
 
         startThreadLifecycles();
-    }, [fetchMessages, fetchThreads]);
+    }, []);
 
     // Set up WebSocket connection and polling fallback
     useEffect(() => {
@@ -398,15 +294,15 @@ export const useThreadManagement = () => {
 
         return () => {
             if (stomp?.connected) {
-                stomp.send('/messageQueue/unsubscribe', {},
+                stomp.send('/app/unsubscribe', {},
                     JSON.stringify({ sessionId: sessionIdRef.current })
                 );
                 stomp.disconnect();
             }
-            stopPolling();
+
             setIsConnected(false);
         };
-    }, [connectWebSocket, stopPolling]);
+    }, [connectWebSocket]);
 
     return {
         // States
