@@ -4,19 +4,20 @@ import { Button } from '../components/common/Button';
 import { ThreadManagementHeader } from '../components/ui/thread/ThreadManagementHeader';
 import { ThreadCountSelector } from '../components/ui/thread/ThreadCountSelector';
 import { ThreadSection } from '../components/ui/thread/ThreadSection';
-import { QueuePanel } from '../components/ui/queue/QueuePanel';
+import {QueuePanel} from '../components/ui/queue/QueuePanel';
 import { useThreadManagement } from '../components/hooks/useThreadManagement';
 
 const ThreadManagement = () => {
     const [senderCount, setSenderCount] = useState(5);
     const [receiverCount, setReceiverCount] = useState(5);
     const [isSidePanelOpen, setIsSidePanelOpen] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
 
     const {
         senderThreads,
         receiverThreads,
         error,
-        queueMessages,
+        messages,
         currentPage,
         totalPages,
         setCurrentPage,
@@ -83,10 +84,11 @@ const ThreadManagement = () => {
             <QueuePanel
                 isOpen={isSidePanelOpen}
                 onToggle={() => setIsSidePanelOpen(!isSidePanelOpen)}
-                messages={queueMessages}
+                messages={messages}
                 currentPage={currentPage}
                 totalPages={totalPages}
                 onPageChange={setCurrentPage}
+                isLoading={isLoading}
             />
         </div>
     );
