@@ -256,15 +256,6 @@ export const useThreadManagement = () => {
      */
     const handlePageChange = useCallback((newPage) => {
         setCurrentPage(newPage);
-
-        if (stompClientRef.current?.connected) {
-            stompClientRef.current.send('/app/updatePage', {},
-                JSON.stringify({
-                    sessionId: sessionIdRef.current,
-                    page: newPage
-                })
-            );
-        }
     }, []);
 
     // Initialize thread lifecycles
@@ -294,9 +285,6 @@ export const useThreadManagement = () => {
 
         return () => {
             if (stomp?.connected) {
-                stomp.send('/app/unsubscribe', {},
-                    JSON.stringify({ sessionId: sessionIdRef.current })
-                );
                 stomp.disconnect();
             }
 
